@@ -19,6 +19,14 @@ for i in range(3):
     axarr[i].plot(final_guess[:,0], final_guess[:,i+1], ':', label="final guess")
 
 axarr[2].legend()
+plt.tight_layout()
+
+# Plot diagnostics
+plt.figure(figsize=(6,4))
+diagn = loadtxt('diagnostics.txt')
+plt.semilogy(diagn[:,0], diagn[:,1])
+plt.xlabel('Iterations')
+plt.ylabel('Cost function')
 
 plt.tight_layout()
 plt.show()

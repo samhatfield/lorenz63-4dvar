@@ -8,7 +8,7 @@ module io
 
 contains
     subroutine output(time_axis, output_array, filename, stride_in)
-        real(dp), intent(in) :: time_axis(tstep), output_array(:,:)
+        real(dp), intent(in) :: time_axis(:), output_array(:,:)
         character(len=*), intent(in) :: filename
         integer, optional :: stride_in
         integer :: i, stride

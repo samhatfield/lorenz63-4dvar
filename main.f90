@@ -10,6 +10,7 @@ program lorenz63_4dvar
     real(dp), dimension(tstep,3) :: truth = 0.0_dp
     real(dp), dimension(tstep,3) :: best_guess
     real(dp) :: obs(tstep/freq,3)
+    real(dp) :: diagn(max_iterations,1)
     real(dp) :: l(3), f, norm, initial(3)
     real(dp) :: time(tstep)
     integer :: i, j = 1
@@ -46,8 +47,7 @@ program lorenz63_4dvar
     do j = 1, max_iterations
         ! Compute cost of current best guess
         best_guess = run_model(tstep, initial)
-        f = calc_cost(tstep, best_guess, obs)
-        print *, f
+        diagn(j,1) = calc_cost(tstep, best_guess, obs)
 
         ! Output first guess
         if (j == 1) then
@@ -67,4 +67,7 @@ program lorenz63_4dvar
     end do
 
     call output(time, best_guess, "final_guess.txt")
+
+    ! Output diagnostics
+    call output((/ (real(i,dp), i = 1, max_iterations) /), diagn, "diagnostics.txt")
 end program lorenz63_4dvar
