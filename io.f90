@@ -7,8 +7,8 @@ module io
     public output
 
 contains
-    subroutine output(output_array, filename, stride_in)
-        real(dp), intent(in) :: output_array(:,:)
+    subroutine output(time_axis, output_array, filename, stride_in)
+        real(dp), intent(in) :: time_axis(tstep), output_array(:,:)
         character(len=*), intent(in) :: filename
         integer, optional :: stride_in
         integer :: i, stride
@@ -20,8 +20,8 @@ contains
         end if
 
         open(1, file=filename)
-        do i = 1, size(output_array, 1), stride
-            write (1,*) output_array(i,:)
+        do i = 1, size(output_array, 1)
+            write (1,*) time_axis(i*stride), output_array(i,:)
         end do
         close(1)
     end subroutine output

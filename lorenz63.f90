@@ -39,7 +39,7 @@ contains
 
     function run_adjoint(tstep, in, in_hat) result(hat)
         integer, intent(in) :: tstep
-        real(dp), intent(in) :: in(tstep,3), in_hat(3)
+        real(dp), intent(in) :: in(3), in_hat(3)
         real(dp) :: hat(3)
         real(dp), dimension(3) :: k1, k1_hat, k2_hat
         integer :: i
@@ -48,18 +48,18 @@ contains
 
         do i = tstep, 1, -1
             k1 = h*(/&
-            & a*(in(i,2) - in(i,1)), &
-            & r*in(i,1) - in(i,2) - in(i,1)*in(i,3), &
-            & in(i,1)*in(i,2) - b*in(i,3) &
+            & a*(in(2) - in(1)), &
+            & r*in(1) - in(2) - in(1)*in(3), &
+            & in(1)*in(2) - b*in(3) &
             & /)
 
             k1_hat = 0.5_dp * hat
             k2_hat = 0.5_dp * hat
 
-            hat(1)    = hat(1)    + h*k2_hat(3)*(in(i,2) + k1(2))
-            k1_hat(1) = k1_hat(1) + h*k2_hat(3)*(in(i,2) + k1(2))
-            hat(2)    = hat(2)    + h*k2_hat(3)*(in(i,1) + k1(1))
-            k1_hat(2) = k1_hat(2) + h*k2_hat(3)*(in(i,1) + k1(1))
+            hat(1)    = hat(1)    + h*k2_hat(3)*(in(2) + k1(2))
+            k1_hat(1) = k1_hat(1) + h*k2_hat(3)*(in(2) + k1(2))
+            hat(2)    = hat(2)    + h*k2_hat(3)*(in(1) + k1(1))
+            k1_hat(2) = k1_hat(2) + h*k2_hat(3)*(in(1) + k1(1))
             hat(3)    = hat(3)    - h*k2_hat(3)*b
             k1_hat(3) = k1_hat(3) - h*k2_hat(3)*b
 
@@ -67,20 +67,20 @@ contains
             k1_hat(1) = k1_hat(1) + h*k2_hat(2)*r
             hat(2)    = hat(2)    - h*k2_hat(2)
             k1_hat(2) = k1_hat(2) - h*k2_hat(2)
-            hat(1)    = hat(1)    - h*k2_hat(2)*(in(i,3) + k1(3))
-            k1_hat(1) = k1_hat(1) - h*k2_hat(2)*(in(i,3) + k1(3))
-            hat(3)    = hat(3)    - h*(in(i,1) + k1(1)) * k2_hat(2)
-            k1_hat(3) = k1_hat(3) - h*(in(i,1) + k1(1)) * k2_hat(2)
+            hat(1)    = hat(1)    - h*k2_hat(2)*(in(3) + k1(3))
+            k1_hat(1) = k1_hat(1) - h*k2_hat(2)*(in(3) + k1(3))
+            hat(3)    = hat(3)    - h*(in(1) + k1(1)) * k2_hat(2)
+            k1_hat(3) = k1_hat(3) - h*(in(1) + k1(1)) * k2_hat(2)
 
             hat(2)    = hat(2)    + h*a*k2_hat(1)
             k1_hat(2) = k1_hat(2) + h*a*k2_hat(1)
             hat(1)    = hat(1)    - h*a*k2_hat(1)
             k1_hat(1) = k1_hat(1) - h*a*k2_hat(1)
 
-            hat(1) = hat(1) + h*k1_hat(3)*in(i,2) + h*r*k1_hat(2)
-            hat(2) = hat(2) + h*in(i,1)*k1_hat(3) - h*k1_hat(2)
-            hat(3) = hat(3) - h*b*k1_hat(3) - h*in(i,1)*k1_hat(2)
-            hat(1) = hat(1) - h*k1_hat(2)*in(i,3)
+            hat(1) = hat(1) + h*k1_hat(3)*in(2) + h*r*k1_hat(2)
+            hat(2) = hat(2) + h*in(1)*k1_hat(3) - h*k1_hat(2)
+            hat(3) = hat(3) - h*b*k1_hat(3) - h*in(1)*k1_hat(2)
+            hat(1) = hat(1) - h*k1_hat(2)*in(3)
             hat(2) = hat(2) + h*a*k1_hat(1)
             hat(1) = hat(1) - h*a*k1_hat(1)
         end do
