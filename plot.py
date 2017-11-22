@@ -3,23 +3,23 @@ from numpy import loadtxt
 
 plt.style.use('ggplot')
 
-# Plot truth
-truth = loadtxt('truth.txt')
-plt.plot(truth[:,0], label="truth")
+f, axarr = plt.subplots(3, sharex=True, figsize=(6,10))
 
-# Plot observations
+# Load all data
+truth = loadtxt('truth.txt')
 obs = loadtxt('obs.txt')
 obs[obs == 0.0] = None
-plt.plot(obs[:,0], 'x', label="observations", alpha=0.5)
+first_guess = loadtxt('first_guess.txt')
+final_guess = loadtxt('final_guess.txt')
 
-# Plot first guess
-truth = loadtxt('first_guess.txt')
-plt.plot(truth[:,0], '--', label="first guess", alpha=0.5)
+# Plot all data
+for i in range(3):
+    axarr[i].plot(truth[:,i], label="truth")
+    axarr[i].plot(obs[:,i], 'x', label="observations", alpha=0.5)
+    axarr[i].plot(first_guess[:,i], '--', label="first guess", alpha=0.5)
+    axarr[i].plot(final_guess[:,i], ':', label="final guess")
 
-# Plot final guess
-truth = loadtxt('final_guess.txt')
-plt.plot(truth[:,0], ':', label="final guess")
+axarr[2].legend()
 
-plt.legend()
-
+plt.tight_layout()
 plt.show()
