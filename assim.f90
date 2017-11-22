@@ -8,29 +8,31 @@ module assim
     public calc_cost, calc_cost_grad
 
 contains
-    function calc_cost(tstep, traj, obs, D) result(f)
+    function calc_cost(tstep, traj, obs) result(J)
         integer, intent(in) :: tstep
-        real(dp), intent(in) :: traj(tstep,3), obs(tstep,3), D(tstep)
-        real(dp) :: f
+        real(dp), intent(in) :: traj(tstep,3), obs(tstep,3)
+        real(dp) :: J
         integer :: i
 
         ! Calculate cost function
-        f = 0.0_dp
+        J = 0.0_dp
         do i = 1, tstep
-            f = f + 0.5 * sum(D(i)*(traj(i,:) - obs(i,:))**2)
+            J = J + 0.5 * sum((traj(i,:) - obs(i,:))**2)/obs_var
         end do
     end function calc_cost
 
-    function calc_cost_grad(tstep, traj, obs, D) result(hat)
+    function calc_cost_grad(tstep, traj, obs) result(hat)
         integer, intent(in) :: tstep
-        real(dp), intent(in) :: traj(tstep,3), obs(tstep,3), D(tstep)
+        real(dp), intent(in) :: traj(tstep,3), obs(tstep,3)
         real(dp) :: hat(3)
         integer :: i
 
-        hat = (traj(tstep,:) - obs(tstep,:))*D(tstep)
+        hat = (traj(tstep,:) - obs(tstep,:))/obs_var
 
-        do i = tstep-1, 1, -1
-            hat = run_adjoint(1, 0, traj(i,:), hat) + (traj(i,:) - obs(i,:))*D(i)
+        do i = tstep-1, 2, -1
+            hat = run_adjoint(1, traj(i,:), hat) + (traj(i,:) - obs(i,:))/obs_var
         end do
+
+        hat = hat + (traj(1,:) - obs(1,:))/obs_var
     end function calc_cost_grad
 end module assim

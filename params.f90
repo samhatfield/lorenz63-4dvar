@@ -7,10 +7,8 @@ module params
     integer, parameter :: sp = real32
 
     real(dp), parameter :: h = 0.01_dp
-    real(dp), parameter :: wind_len = 2.0_dp
-    real(dp), parameter :: fore_len = 3.0_dp
-    integer, parameter :: fcstep = (wind_len + fore_len)/h
-    integer, parameter :: tstep = wind_len/h + 1
+    real(dp), parameter :: wind_len = 6.0_dp
+    integer, parameter :: tstep = wind_len/h
     integer, parameter :: freq = 2
     integer, parameter :: n_obs = (tstep - 1) / freq + 1
     real(dp), parameter :: obs_var = 2.5_dp

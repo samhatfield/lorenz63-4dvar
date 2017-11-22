@@ -7,24 +7,22 @@ program lorenz63_4dvar
 
     implicit none
 
-    real(dp), dimension(fcstep,3) :: truth = 0.0_dp
+    real(dp), dimension(tstep,3) :: truth = 0.0_dp
     real(dp), dimension(tstep,3) :: best_guess, obs = 0.0_dp
-    real(dp), dimension(tstep) :: D = 0.0_dp
     real(dp) :: l(3), f, norm = 100.0_dp, initial(3)
     logical :: converged = .false.
     integer :: i, j = 1
 
     ! Run truth
-    truth = run_model(fcstep, (/ 1.0_dp, 1.0_dp, 1.0_dp /))
+    truth = run_model(tstep, (/ 1.0_dp, 1.0_dp, 1.0_dp /))
 
     ! Calculate observations
     do i = 1, tstep, freq
         obs(i,:) = (/&
-        & randn(truth(i,1), obs_var), &
-        & randn(truth(i,2), obs_var), &
-        & randn(truth(i,3), obs_var) &
+        & randn(truth(i,1), sqrt(obs_var)), &
+        & randn(truth(i,2), sqrt(obs_var)), &
+        & randn(truth(i,3), sqrt(obs_var)) &
         & /)
-        D(i) = 1.0_dp
     end do
 
     ! Output truth and observations
@@ -36,11 +34,9 @@ program lorenz63_4dvar
 
     ! Perform minimisation
     do while (.not. converged)
-        print *, initial
-
         ! Compute cost of current best guess
         best_guess = run_model(tstep, initial)
-        f = calc_cost(tstep, best_guess, obs, D)
+        f = calc_cost(tstep, best_guess, obs)
         print *, f
 
         ! Output first guess
@@ -49,7 +45,7 @@ program lorenz63_4dvar
         end if
 
         ! Compute gradient of cost function
-        l = calc_cost_grad(tstep, best_guess, obs, D)
+        l = calc_cost_grad(tstep, best_guess, obs)
 
         ! Compute norm of cost function gradient
         norm = sqrt(sum(l**2))

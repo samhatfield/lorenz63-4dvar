@@ -37,8 +37,8 @@ contains
         end do
     end function run_model
 
-    function run_adjoint(tstep, j, in, in_hat) result(hat)
-        integer, intent(in) :: tstep, j
+    function run_adjoint(tstep, in, in_hat) result(hat)
+        integer, intent(in) :: tstep
         real(dp), intent(in) :: in(tstep,3), in_hat(3)
         real(dp) :: hat(3)
         real(dp), dimension(3) :: k1, k1_hat, k2_hat
