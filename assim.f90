@@ -10,7 +10,7 @@ module assim
 contains
     function calc_cost(tstep, traj, obs) result(J)
         integer, intent(in) :: tstep
-        real(dp), intent(in) :: traj(tstep,3), obs(tstep,3)
+        real(dp), intent(in) :: traj(tstep,3), obs(tstep/freq,3)
         real(dp) :: J
         integer :: i
 
