@@ -103,10 +103,13 @@ contains
             hat(1)    = hat(1)    - h*a*k2_hat(1)
             k1_hat(1) = k1_hat(1) - h*a*k2_hat(1)
 
-            hat(1) = hat(1) + h*k1_hat(3)*y + h*r*k1_hat(2)
-            hat(2) = hat(2) + h*x*k1_hat(3) - h*k1_hat(2)
-            hat(3) = hat(3) - h*b*k1_hat(3) - h*x*k1_hat(2)
-            hat(1) = hat(1) - h*k1_hat(2)*z
+            hat(1) = hat(1) + h*y*k1_hat(3)
+            hat(2) = hat(2) + h*x*k1_hat(3)
+            hat(3) = hat(3) - h*b*k1_hat(3)
+            hat(1) = hat(1) + h*r*k1_hat(2)
+            hat(2) = hat(2) - h*k1_hat(2)
+            hat(1) = hat(1) - h*z*k1_hat(2)
+            hat(3) = hat(3) - h*x*k1_hat(2)
             hat(2) = hat(2) + h*a*k1_hat(1)
             hat(1) = hat(1) - h*a*k1_hat(1)
         end do
