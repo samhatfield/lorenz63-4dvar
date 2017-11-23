@@ -29,10 +29,9 @@ contains
 
         hat = (traj(last,:) - obs(1+last/freq,:))/obs_var
 
-        do i = last-freq, 1+freq, -freq
-            hat = run_adjoint(freq, traj(i,:), hat) + (traj(i,:) - obs(1+i/freq,:))/obs_var
+        do i = last-freq, 1, -freq
+            hat = run_adjoint(traj(i+1:i+freq,:), hat) &
+                & + (traj(i,:) - obs(1+i/freq,:))/obs_var
         end do
-
-        hat = hat + (traj(1,:) - obs(1,:))/obs_var
     end function calc_cost_grad
 end module assim

@@ -50,9 +50,7 @@ contains
             y = in(i,2); y_p = out_p(i,2)
             z = in(i,3); z_p = out_p(i,3)
 
-            k1(1) = h*a*(y - x)
-            k1(2) = h*(r*x - y - x*z)
-            k1(3) = h*(x*y - b*z)
+            k1 = h*(/ a*(y - x), r*x - y - x*z, x*y - b*z /)
 
             k1_p(1) = h*a*(y_p - x_p)
             k1_p(2) = h*(r*x_p - y_p - x_p*z - x*z_p)
@@ -68,29 +66,26 @@ contains
         end do
     end function run_tangent_linear
 
-    function run_adjoint(tstep, in, in_hat) result(hat)
-        integer, intent(in) :: tstep
-        real(dp), intent(in) :: in(3), in_hat(3)
-        real(dp) :: hat(3)
+    function run_adjoint(in, in_hat) result(hat)
+        real(dp), intent(in) :: in(:,:), in_hat(3)
+        real(dp) :: hat(3), x, y, z
         real(dp), dimension(3) :: k1, k1_hat, k2_hat
         integer :: i
 
         hat = in_hat
 
-        do i = tstep, 1, -1
-            k1 = h*(/&
-            & a*(in(2) - in(1)), &
-            & r*in(1) - in(2) - in(1)*in(3), &
-            & in(1)*in(2) - b*in(3) &
-            & /)
+        do i = size(in,1), 1, -1
+            x = in(i,1); y = in(i,2); z = in(i,3)
+
+            k1 = h*(/ a*(y - x), r*x - y - x*z, x*y - b*z /)
 
             k1_hat = 0.5_dp * hat
             k2_hat = 0.5_dp * hat
 
-            hat(1)    = hat(1)    + h*k2_hat(3)*(in(2) + k1(2))
-            k1_hat(1) = k1_hat(1) + h*k2_hat(3)*(in(2) + k1(2))
-            hat(2)    = hat(2)    + h*k2_hat(3)*(in(1) + k1(1))
-            k1_hat(2) = k1_hat(2) + h*k2_hat(3)*(in(1) + k1(1))
+            hat(1)    = hat(1)    + h*k2_hat(3)*(y + k1(2))
+            k1_hat(1) = k1_hat(1) + h*k2_hat(3)*(y + k1(2))
+            hat(2)    = hat(2)    + h*k2_hat(3)*(x + k1(1))
+            k1_hat(2) = k1_hat(2) + h*k2_hat(3)*(x + k1(1))
             hat(3)    = hat(3)    - h*k2_hat(3)*b
             k1_hat(3) = k1_hat(3) - h*k2_hat(3)*b
 
@@ -98,20 +93,20 @@ contains
             k1_hat(1) = k1_hat(1) + h*k2_hat(2)*r
             hat(2)    = hat(2)    - h*k2_hat(2)
             k1_hat(2) = k1_hat(2) - h*k2_hat(2)
-            hat(1)    = hat(1)    - h*k2_hat(2)*(in(3) + k1(3))
-            k1_hat(1) = k1_hat(1) - h*k2_hat(2)*(in(3) + k1(3))
-            hat(3)    = hat(3)    - h*k2_hat(2)*(in(1) + k1(1))
-            k1_hat(3) = k1_hat(3) - h*k2_hat(2)*(in(1) + k1(1))
+            hat(1)    = hat(1)    - h*k2_hat(2)*(z + k1(3))
+            k1_hat(1) = k1_hat(1) - h*k2_hat(2)*(z + k1(3))
+            hat(3)    = hat(3)    - h*k2_hat(2)*(x + k1(1))
+            k1_hat(3) = k1_hat(3) - h*k2_hat(2)*(x + k1(1))
 
             hat(2)    = hat(2)    + h*a*k2_hat(1)
             k1_hat(2) = k1_hat(2) + h*a*k2_hat(1)
             hat(1)    = hat(1)    - h*a*k2_hat(1)
             k1_hat(1) = k1_hat(1) - h*a*k2_hat(1)
 
-            hat(1) = hat(1) + h*k1_hat(3)*in(2) + h*r*k1_hat(2)
-            hat(2) = hat(2) + h*in(1)*k1_hat(3) - h*k1_hat(2)
-            hat(3) = hat(3) - h*b*k1_hat(3) - h*in(1)*k1_hat(2)
-            hat(1) = hat(1) - h*k1_hat(2)*in(3)
+            hat(1) = hat(1) + h*k1_hat(3)*y + h*r*k1_hat(2)
+            hat(2) = hat(2) + h*x*k1_hat(3) - h*k1_hat(2)
+            hat(3) = hat(3) - h*b*k1_hat(3) - h*x*k1_hat(2)
+            hat(1) = hat(1) - h*k1_hat(2)*z
             hat(2) = hat(2) + h*a*k1_hat(1)
             hat(1) = hat(1) - h*a*k1_hat(1)
         end do
