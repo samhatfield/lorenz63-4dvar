@@ -5,12 +5,10 @@ program test
 
     implicit none
 
-    integer, parameter :: n_samples = 12
-    integer, parameter :: nsteps = 100
-
     call test_tl
 contains
     subroutine test_tl
+        integer, parameter :: nsteps = 100
         real(dp), dimension(3) :: pert_orig, orig_state, pert, pert_state, diff
         real(dp), dimension(nsteps,3) :: orig_traj, pert_traj, pert_traj_tl
         real(dp) :: rel_err
@@ -48,9 +46,12 @@ contains
 
     subroutine test_adj
 
+
+
     end subroutine test_adj
 
     subroutine test_grad
+        integer, parameter :: n_samples = 12
         real(dp), dimension(3) :: initial, grad1, grad2, rand_unit
         real(dp) :: grad1_norm(3), alpha = 1.0_dp, obs(tstep/freq,3), cost1, cost2
         real(dp) :: traj(tstep,3)
