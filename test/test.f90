@@ -1,11 +1,14 @@
 program test
     use params
-    use lorenz63, only: run_model, run_tangent_linear
+    use lorenz63, only: run_model, run_tangent_linear, run_adjoint
     use assim, only: calc_cost, calc_cost_grad
 
     implicit none
 
+    call time_seed
+
     call test_tl
+    call test_adj
 contains
     subroutine test_tl
         integer, parameter :: nsteps = 100
@@ -15,13 +18,14 @@ contains
         real(dp) :: gamma = 1000_dp
         integer :: i
 
-        pert_orig = (/ 1.0_dp, -1.0_dp, 0.5_dp /)
-
+        print *, '============================================================'
         print *, 'Tangent linear test'
         print *, '============================================================'
         print *, 'The relative error should tend towards zero as the magnitude'
         print *, 'of the perturbation decreases.'
         print *, '============================================================'
+
+        pert_orig = (/ 1.0_dp, -1.0_dp, 0.5_dp /)
 
         write (*, '(A10, A16)') 'Magnitude', 'Relative error'
         do i = 1, 9
@@ -45,9 +49,35 @@ contains
     end subroutine test_tl
 
     subroutine test_adj
+        integer, parameter :: nsteps = 10
+        real(dp), dimension(3) :: pert, initial_hat
+        real(dp), dimension(nsteps,3) :: traj, pert_traj
+        real(dp) :: forward_product, adjoint_product
 
+        print *, ''
+        print *, '============================================================'
+        print *, 'Adjoint model test'
+        print *, '============================================================'
+        print *, 'The inner product of the final perturbation with itself '
+        print *, 'should equal the inner product of the initial perturbation '
+        print *, 'with the initial perturbation put through the tangent '
+        print *, 'and adjoint models.'
+        print *, '<Mdx, Mdx> = <dx, M^TMdx>'
+        print *, '============================================================'
 
+        ! Generate random unit vector
+        call random_number(pert)
 
+        traj = run_model(nsteps, (/ 1.0_dp, 2.0_dp, 1.5_dp /))
+        pert_traj = run_tangent_linear(nsteps, traj, pert)
+        initial_hat = run_adjoint(traj(2:nsteps,:), pert_traj(nsteps,:))
+
+        forward_product = sum(pert_traj(nsteps,:)**2)
+        adjoint_product = sum(pert*initial_hat)
+
+        write (*, '(A17, A17)') 'Forward product', 'Adjoint product'
+        write (*,'(F17.9, F17.9)') forward_product, adjoint_product
+        print *, '============================================================'
     end subroutine test_adj
 
     subroutine test_grad
@@ -110,4 +140,19 @@ contains
         end do
         close(1)
     end subroutine output
+
+    subroutine time_seed()
+      integer :: i, n, clock
+      integer, allocatable :: seed(:)
+
+      call random_seed(size = n)
+      allocate(seed(n))
+
+      call system_clock(count=clock)
+
+      seed = clock + 37 * (/ (i - 1, i = 1, n) /)
+      call random_seed(put = seed)
+
+      deallocate(seed)
+    end subroutine
 end program test
