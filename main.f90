@@ -1,7 +1,7 @@
 program lorenz63_4dvar
     use params
     use lorenz63, only: run_model
-    use utils, only: randn
+    use utils, only: time_seed, randn
     use io, only: output
     use assim, only: calc_cost, calc_cost_grad
 
@@ -19,6 +19,9 @@ program lorenz63_4dvar
     if (mod(tstep, freq) /= 0) then
         stop 'Number of timesteps must be a multiple of the observation frequency'
     end if
+
+    ! Seed random number generator
+    call time_seed
 
     ! Generate time axis
     time = (/ (real(i)*h, i = 0, tstep-1) /)
