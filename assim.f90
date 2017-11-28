@@ -30,7 +30,7 @@ contains
         hat = (traj(last,:) - obs(1+last/freq,:))/obs_var
 
         do i = last-freq, 1, -freq
-            hat = run_adjoint(traj(i:i+freq-1,:), hat) &
+            hat = run_adjoint(freq+1, traj(i:i+freq,:), hat) &
                 & + (traj(i,:) - obs(1+i/freq,:))/obs_var
         end do
     end function calc_cost_grad
