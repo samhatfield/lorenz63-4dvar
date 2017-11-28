@@ -70,13 +70,13 @@ contains
 
         traj = run_model(nsteps, (/ 1.0_dp, 2.0_dp, 1.5_dp /))
         pert_traj = run_tangent_linear(nsteps, traj, pert)
-        initial_hat = run_adjoint(traj(2:nsteps,:), pert_traj(nsteps,:))
+        initial_hat = run_adjoint(traj(:nsteps-1,:), pert_traj(nsteps,:))
 
         forward_product = sum(pert_traj(nsteps,:)**2)
         adjoint_product = sum(pert*initial_hat)
 
         write (*, '(A17, A17)') 'Forward product', 'Adjoint product'
-        write (*,'(F17.9, F17.9)') forward_product, adjoint_product
+        write (*,'(F17.12, F17.12)') forward_product, adjoint_product
         print *, '============================================================'
     end subroutine test_adj
 
