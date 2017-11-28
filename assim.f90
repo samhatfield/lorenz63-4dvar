@@ -1,6 +1,6 @@
 module assim
     use params
-    use lorenz63, only: a, b, r, run_adjoint
+    use lorenz63, only: run_adjoint
 
     implicit none
 
