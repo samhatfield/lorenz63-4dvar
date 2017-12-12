@@ -75,8 +75,8 @@ contains
         forward_product = sum(pert_traj(nsteps,:)**2)
         adjoint_product = sum(pert*initial_hat)
 
-        write (*, '(A17, A17)') 'Forward product', 'Adjoint product'
-        write (*,'(F17.12, F17.12)') forward_product, adjoint_product
+        write (*, '(3A20)') 'Forward product', 'Adjoint product', 'Difference'
+        write (*,'(3F20.16)') forward_product, adjoint_product, forward_product - adjoint_product
         print *, '============================================================'
     end subroutine test_adj
 
