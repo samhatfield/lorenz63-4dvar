@@ -1,3 +1,7 @@
+!> @author
+!> Sam Hatfield, AOPP, University of Oxford
+!> @brief
+!> Contains experiment parameters.
 module params
     use, intrinsic :: iso_fortran_env
 
@@ -13,6 +17,5 @@ module params
     integer, parameter :: n_obs = (tstep - 1) / freq + 1
     real(dp), parameter :: obs_var = 2.5_dp
     integer, parameter :: max_iterations = 500
-    real(dp), parameter :: tolerance = 0.5_dp
     integer :: last
 end module params

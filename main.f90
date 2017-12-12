@@ -1,3 +1,9 @@
+!> @author
+!> Sam Hatfield, AOPP, University of Oxford
+!> @brief
+!> An observing system simulation experiment (OSSE) using the Lorenz '63 model
+!> and 4DVar.
+!> Based on code by Amos Lawless, University of Reading.
 program lorenz63_4dvar
     use params
     use lorenz63, only: run_model
@@ -66,9 +72,11 @@ program lorenz63_4dvar
         ! Normalise gradient vector
         l = l/norm
 
+        ! Update initial state estimate at beginning of window
         initial = initial - 0.5_dp*l
     end do
 
+    ! Output final best guess
     call output(time, best_guess, "final_guess.txt")
 
     ! Output diagnostics

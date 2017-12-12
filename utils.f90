@@ -1,3 +1,7 @@
+!> @author
+!> Sam Hatfield, AOPP, University of Oxford
+!> @brief
+!> Contains utility functions.
 module utils
     use params
 
@@ -7,21 +11,29 @@ module utils
     public time_seed, randn
 
 contains
+        !> @brief
+        !> Seeds random number generator based on the time.
         subroutine time_seed()
-          integer :: i, n, clock
-          integer, allocatable :: seed(:)
-    
-          call random_seed(size = n)
-          allocate(seed(n))
-    
-          call system_clock(count=clock)
-    
-          seed = clock + 37 * (/ (i - 1, i = 1, n) /)
-          call random_seed(put = seed)
-    
-          deallocate(seed)
+            integer :: i, n, clock
+            integer, allocatable :: seed(:)
+
+            call random_seed(size = n)
+            allocate(seed(n))
+
+            call system_clock(count=clock)
+
+            seed = clock + 37 * (/ (i - 1, i = 1, n) /)
+            call random_seed(put = seed)
+
+            deallocate(seed)
         end subroutine
 
+        !> @brief
+        !> Generates a random number drawn for the specified normal
+        !> distribution.
+        !> @param mean the mean of the distribution to draw from
+        !> @param stdev the standard deviation of the distribution to draw from
+        !> @return randn the generated random number
         function randn(mean, stdev)
             real(dp), intent(in) :: mean, stdev
             real(dp) :: u, v, randn
