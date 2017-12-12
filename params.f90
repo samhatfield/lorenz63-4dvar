@@ -16,6 +16,7 @@ module params
     integer, parameter :: freq = 6
     integer, parameter :: n_obs = (tstep - 1) / freq + 1
     real(dp), parameter :: obs_var = 2.5_dp
-    integer, parameter :: max_iterations = 500
+    integer, parameter :: out_iter = 7
+    integer, parameter :: in_iter = 50
     integer :: last
 end module params

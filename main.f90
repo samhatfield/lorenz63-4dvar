@@ -15,9 +15,9 @@ program lorenz63_4dvar
 
     real(dp), dimension(tstep,3) :: truth = 0.0_dp
     real(dp), dimension(tstep,3) :: best_guess
-    real(dp) :: obs(tstep/freq,3)
-    real(dp) :: diagn(max_iterations,1)
-    real(dp) :: l(3), f, norm, initial(3)
+    real(dp), dimension(tstep/freq,3) :: obs, innov
+    real(dp) :: diagn(out_iter*in_iter,1)
+    real(dp) :: l(3), f, norm, initial(3), del(3)
     real(dp) :: time(tstep)
     integer :: i, j = 1
 
@@ -52,33 +52,46 @@ program lorenz63_4dvar
     ! Set initial best guess
     initial = (/ 8.0_dp, 8.0_dp, 8.0_dp /)
 
-    ! Perform minimisation
-    do j = 1, max_iterations
-        ! Compute cost of current best guess
+    ! Perform outer loop
+    do j = 1, out_iter
+        ! Generate nonlinear forecast
         best_guess = run_model(tstep, initial)
-        diagn(j,1) = calc_cost(tstep, best_guess, obs)
 
         ! Output first guess
         if (j == 1) then
             call output(time, best_guess, "first_guess.txt")
         end if
 
-        ! Compute gradient of cost function
-        l = calc_cost_grad(tstep, best_guess, obs)
+        ! Calculate innovations
+        innov = obs - best_guess(1:tstep:freq,:)
 
-        ! Compute norm of cost function gradient
-        norm = sqrt(sum(l**2))
+        ! Initial increment for inner loop
+        del = 0.0_dp
 
-        ! Normalise gradient vector
-        l = l/norm
+        ! Perform inner loop minimisation
+        do i = 1, in_iter
+            ! Compute cost of current best guess
+            diagn((j-1)*in_iter+i,1) = calc_cost(tstep, best_guess, del, innov)
 
-        ! Update initial state estimate at beginning of window
-        initial = initial - 0.5_dp*l
+            ! Compute gradient of cost function
+            l = calc_cost_grad(tstep, best_guess, del, innov)
+
+            ! Compute norm of cost function gradient
+            norm = sqrt(sum(l**2))
+
+            ! Normalise gradient vector
+            l = l/norm
+
+            ! Update initial perturbation estimate at beginning of window
+            del = del - 0.5_dp*l
+        end do
+
+        initial = initial + del
     end do
 
     ! Output final best guess
     call output(time, best_guess, "final_guess.txt")
 
     ! Output diagnostics
-    call output((/ (real(i,dp), i = 1, max_iterations) /), diagn, "diagnostics.txt")
+    call output((/(real(i,dp), i = 1, out_iter*in_iter)/), diagn, "diagnostics.txt")
 end program lorenz63_4dvar
